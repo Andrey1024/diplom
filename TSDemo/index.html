@@ -35,15 +35,15 @@
                 <tbody>
                     <tr><td>
                         <span class="header">Sigma: </span>
-                        <input class="input" type="text" data-bind="value: sigma"/>
+                        <input class="input" type="text" data-bind="numeric: sigma"/>
                     </td></tr>
                     <tr><td>
                         <span class="header">Number of initials:</span>
-                        <input class="input" type="text" data-bind="value: count"/>
+                        <input class="input" type="text" data-bind="numeric: count"/>
                     </td></tr>
                     <tr><td>
                         <span class="header">Output step:</span>
-                        <input class="input" type="text" data-bind="value: step"/>
+                        <input class="input" type="text" data-bind="numeric: step"/>
                     </td></tr>
                 </tbody>
             </table>
@@ -61,8 +61,8 @@
                     <!-- ko foreach: events -->
                         <tr>                  
                             <td style="width: 25%"><select data-bind="options: avalilableSpecies, value: species"></select></td>
-                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="value: time"/></td>
-                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="value: value"/></td>
+                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="numeric: time"/></td>
+                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="numeric: value"/></td>
                             <td style="width: 15%"><button data-bind="click: $parent.RemoveEvent">X</button></td>
                         </tr>
                     <!-- /ko -->

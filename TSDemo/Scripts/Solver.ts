@@ -23,8 +23,10 @@ export interface IWorkerMessage {
     rightSide: string;
     x0: IVector;
     t0: number;
+    tFinal?: number;
     sigma: number;
     count: number;
+    events?: Array<IEvent>;
 }
 
 export interface IEvent {
