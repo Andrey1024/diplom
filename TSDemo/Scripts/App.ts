@@ -193,13 +193,14 @@ class ViewModel {
         solve4.color('grey'); solve4.name = "Y - Y'";
         this.worker.onmessage = (ev: MessageEvent) => {
             var data = <Solver.IWorkerResult>ev.data;
+            var n = data.Solves.length;
             
             var Time = new Float64Array(data.Time);
-            var Solves = new Array<Float64Array>(106);
-            for (var i = 0; i < 106; i++)
+            var Solves = new Array<Float64Array>(n);
+            for (var i = 0; i < n; i++)
                 Solves[i] = new Float64Array(data.Solves[i]);
              
-            var map = this.speciesMap[this.settings.currentSystem()];
+            var map = this.speciesMap[data.Type];
             solve1.x.push(Solves[map["L"]].map((val, i) => {return val - Solves[map["L'"]][i]}));
             solve2.x.push(Solves[map["R"]].map((val, i) => {return val - Solves[map["R'"]][i]}));
             solve3.x.push(Solves[map["V"]].map((val, i) => {return val - Solves[map["V'"]][i]}));
@@ -227,7 +228,9 @@ class ViewModel {
                     rightSide: "rightSide.js",
                     sigma: this.settings.sigma(),
                     count: this.settings.count(),
-                    events: events
+                    events: events,
+                    type: this.settings.currentSystem(),
+                    reference: this.speciesMap[this.settings.currentSystem()]["R"],
                 }                
                 break;
             case "DNA 2 domain":
@@ -239,7 +242,9 @@ class ViewModel {
                     rightSide: "rightSide106.js",
                     sigma: this.settings.sigma(),
                     count: this.settings.count(),
-                    events: events
+                    events: events,
+                    type: this.settings.currentSystem(),
+                    reference: this.speciesMap[this.settings.currentSystem()]["R"],
                 }                
                 break;                
         }

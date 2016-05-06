@@ -11,6 +11,9 @@
             float: right;
             width: 80%;
         }
+        #rightPane {
+            margin: 20px
+        }
         .input {
             float: right;
         }
@@ -26,7 +29,7 @@
         }
     </style>
     <div data-bind="with: settings" id="settings">
-        <select style="width: 100%" class="selectTraining" data-bind="options: availableSystems, value: currentSystem, selectmenu: {width: '100%'}">
+        <select style="width: 100%" class="selectTraining" data-bind="options: availableSystems, value: currentSystem, selectmenu: {}">
         </select>
         <div data-bind="accordion: {heightStyle: 'content'}">
             <h3>Parameters</h3>
@@ -73,25 +76,27 @@
         </div>
         <button style="width: 100%" data-bind="click: $parent.compute, button: {}">Compute</button>
     </div>
-    <div class="idd" id="idd" data-idd-plot="chart" style="height:95%">
-        <div data-idd-plot="plot" data-bind="foreach: solves">
-            <div data-idd-plot="polyline"             
-                data-bind="
-                    iddX: t,
-                    iddY: middle,
-                    iddStroke: color,
-                    attr: { 'data-idd-name': name }
-                ">
-            </div>
-            <div
-                data-idd-plot="area"             
-                data-bind="
-                    iddX: t,
-                    iddAreaY1: Lower,
-                    iddAreaY2: upper,
-                    iddAreaFill: CIColor,
-                    attr: { 'data-idd-name': name }
-                ">
+    <div id="rightPane">
+        <div class="idd" id="idd" data-idd-plot="chart" style="height:95%">
+            <div data-idd-plot="plot" data-bind="foreach: solves">
+                <div data-idd-plot="polyline"             
+                    data-bind="
+                        iddX: t,
+                        iddY: middle,
+                        iddStroke: color,
+                        attr: { 'data-idd-name': name }
+                    ">
+                </div>
+                <div
+                    data-idd-plot="area"             
+                    data-bind="
+                        iddX: t,
+                        iddAreaY1: Lower,
+                        iddAreaY2: upper,
+                        iddAreaFill: CIColor,
+                        attr: { 'data-idd-name': name }
+                    ">
+                </div>
             </div>
         </div>
     </div>

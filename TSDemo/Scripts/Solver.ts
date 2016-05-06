@@ -5,6 +5,7 @@ export interface IWorkerResult {
     Solves: Array<ArrayBuffer>;
     AverageTime: number;
     TotalTime: number;
+    Type: string;
 }
 
 export interface IOptions {
@@ -23,10 +24,12 @@ export interface IWorkerMessage {
     rightSide: string;
     x0: IVector;
     t0: number;
-    tFinal?: number;
+    tFinal: number;
     sigma: number;
     count: number;
-    events?: Array<IEvent>;
+    events: Array<IEvent>;
+    type: string;
+    reference: number;
 }
 
 export interface IEvent {

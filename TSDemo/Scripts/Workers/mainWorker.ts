@@ -5,14 +5,9 @@ declare var rightSide;
 
 export = (ev: MessageEvent) => {
     var message = <Solver.IWorkerMessage>JSON.parse(ev.data);
-    var initials = Normal(message.count, 4, message.sigma);
+    var initials = Normal(message.count, 0, message.sigma);
     var n = message.x0.length;
-    
-    var currInitial = 0;
-    
-    var Result: Solver.IWorkerResult;
-    
-    
+     
     
     importScripts("../PrecompiledScripts/" + message.rightSide);
     initials.forEach((val, count) => {
@@ -26,7 +21,7 @@ export = (ev: MessageEvent) => {
         for (var i = 0; i < n; i++) {
             solves[i] = new Array<number>();        
         }
-        message.x0[42] = val;
+        message.x0[message.reference] += val;
         
         var events = message.events;
         var currEvent = 0;
@@ -52,6 +47,8 @@ export = (ev: MessageEvent) => {
             }
         } while (s.time <= message.tFinal);
         
+        gear.dispose();
+        
         var resultTime = new Float64Array(time.length);
         for (var k = 0; k < time.length; k++)
             resultTime[k] = time[k];
@@ -67,7 +64,8 @@ export = (ev: MessageEvent) => {
             Time: resultTime.buffer, 
             Solves: resultSolves.map(val => val.buffer),
             AverageTime: averageTime / points,
-            TotalTime: performance.now() - totalTime
+            TotalTime: performance.now() - totalTime,
+            Type: message.type
         }, returnTransfer);
         
         
