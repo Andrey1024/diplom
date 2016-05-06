@@ -1,0 +1,104 @@
+<html>
+<head>
+    <title>Solver</title>
+    <script data-main="Build/Bootstrap.js" src="lib/requirejs/require.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/IDD/idd.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+<body>
+    <style>
+        .idd {
+            float: right;
+            width: 80%;
+        }
+        #rightPane {
+            margin: 20px
+        }
+        .input {
+            float: right;
+        }
+        .header {
+            float: left;
+        }
+        div.ui-accordion-content {
+            padding: 5px !important;
+        }
+        #settings {
+            float: left;
+            width: 20%;
+        }
+    </style>
+    <div data-bind="with: settings" id="settings">
+        <select style="width: 100%" class="selectTraining" data-bind="options: availableSystems, value: currentSystem, selectmenu: {}">
+        </select>
+        <div data-bind="accordion: {heightStyle: 'content'}">
+            <h3>Parameters</h3>
+            <div>
+            <table style="width: 100%">
+                <tbody>
+                    <tr><td>
+                        <span class="header">Sigma: </span>
+                        <input class="input" type="text" data-bind="numeric: sigma"/>
+                    </td></tr>
+                    <tr><td>
+                        <span class="header">Number of initials:</span>
+                        <input class="input" type="text" data-bind="numeric: count"/>
+                    </td></tr>
+                    <tr><td>
+                        <span class="header">Output step:</span>
+                        <input class="input" type="text" data-bind="numeric: step"/>
+                    </td></tr>
+                </tbody>
+            </table>
+            </div>
+            <h3>Events</h3>
+            <div >
+                <table style="width: 100%">
+                    <thead>
+                        <th>Species</th>
+                        <th>Time</th>
+                        <th>Value</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                    <!-- ko foreach: events -->
+                        <tr>                  
+                            <td style="width: 25%"><select data-bind="options: avalilableSpecies, value: species"></select></td>
+                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="numeric: time"/></td>
+                            <td style="width: 30%"><input style="width: 100%" type="text" data-bind="numeric: value"/></td>
+                            <td style="width: 15%"><button data-bind="click: $parent.RemoveEvent">X</button></td>
+                        </tr>
+                    <!-- /ko -->
+                    </tbody>
+                </table>
+                <button style="width: 100%" data-bind="click: AddEvent">Add event</button>
+            </div>
+        </div>
+        <button style="width: 100%" data-bind="click: $parent.compute, button: {}">Compute</button>
+    </div>
+    <div id="rightPane">
+        <div class="idd" id="idd" data-idd-plot="chart" style="height:95%">
+            <div data-idd-plot="plot" data-bind="foreach: solves">
+                <div data-idd-plot="polyline"             
+                    data-bind="
+                        iddX: t,
+                        iddY: middle,
+                        iddStroke: color,
+                        attr: { 'data-idd-name': name }
+                    ">
+                </div>
+                <div
+                    data-idd-plot="area"             
+                    data-bind="
+                        iddX: t,
+                        iddAreaY1: Lower,
+                        iddAreaY2: upper,
+                        iddAreaFill: CIColor,
+                        attr: { 'data-idd-name': name }
+                    ">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
