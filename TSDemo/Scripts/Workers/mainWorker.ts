@@ -6,8 +6,6 @@ declare var rightSide;
 export = (ev: MessageEvent) => {
     var message = <Solver.IWorkerMessage>JSON.parse(ev.data);
     var initials = Normal(message.count, 4, message.sigma);
-    var initials1 = Normal(message.count, 8, message.sigma);
-    var initials2 = Normal(message.count, 8, message.sigma);
     var n = message.x0.length;
     
     var currInitial = 0;
@@ -28,7 +26,10 @@ export = (ev: MessageEvent) => {
         for (var i = 0; i < n; i++) {
             solves[i] = new Array<number>();        
         }
-        message.x0[2] = val;
+        message.x0[42] = val;
+        
+        var events = message.events;
+        var currEvent = 0;
         
         var gear = new Solver.GearSolver(message.t0, message.x0, rightSide, message.options);
         var s = {solve: message.x0, time: message.t0};
@@ -41,39 +42,15 @@ export = (ev: MessageEvent) => {
             s = gear.Solve();
             points++;
             averageTime += performance.now() - timeForPoint;
-        } while (s.time <= 50000);
-        gear.dispose();
-        lastSolve = solves.map(val => val[val.length - 1]);
-        lastSolve[3] = initials1[count];
-        var s = {solve: lastSolve, time: 50000};
-        var gear = new Solver.GearSolver(50000, lastSolve, rightSide, message.options);
-        while (s.time <= 100000) {
-            time.push(s.time);
-            solves.forEach((v, i) => {
-                v.push(s.solve[i]);
-            });
-            var timeForPoint = performance.now();
-            s = gear.Solve();
-            points++;
-            averageTime += performance.now() - timeForPoint;
-        }
-        gear.dispose();
-        lastSolve = solves.map(val => val[val.length - 1]);
-        lastSolve[2] = initials2[count];
-        var s = {solve: lastSolve, time: 100000};
-        var gear = new Solver.GearSolver(100000, lastSolve, rightSide, message.options);
-        while (s.time < 150000) {
-            time.push(s.time);
-            solves.forEach((v, i) => {
-                v.push(s.solve[i]);
-            });
-            var timeForPoint = performance.now();
-            s = gear.Solve();
-            points++;
-            averageTime += performance.now() - timeForPoint;
-        }
-        gear.dispose();
-        
+            if (currEvent < events.length && s.time > events[currEvent].time) {                
+                gear.dispose();
+                lastSolve = solves.map(val => val[val.length - 1]);
+                lastSolve[events[currEvent].species] = events[currEvent].value;
+                var s = {solve: lastSolve, time: time[time.length - 1]};
+                var gear = new Solver.GearSolver(s.time, s.solve, rightSide, message.options);
+                currEvent++;
+            }
+        } while (s.time <= message.tFinal);
         
         var resultTime = new Float64Array(time.length);
         for (var k = 0; k < time.length; k++)

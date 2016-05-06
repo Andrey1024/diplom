@@ -4,6 +4,9 @@
 /// <reference path="../typings/knockout/knockout.d.ts" />
 /// <reference path="../typings/tinycolor/tinycolor.d.ts" />
 /// <amd-dependency path="Build/PrecompiledScripts/idd-ko.js"/>
+/// <amd-dependency path="knockout-jqueryui/accordion" />
+/// <amd-dependency path="knockout-jqueryui/button" />
+/// <amd-dependency path="knockout-jqueryui/selectmenu" />
 
 import $ = require("jquery");
 import ko = require("knockout");
@@ -133,19 +136,43 @@ class Solve {
     });
 }
 
-class ViewModel {
-    solves: KnockoutObservableArray<Solve> = ko.observableArray([]);
+class PIEvent {
+    species = ko.observable("L");
+    avalilableSpecies = ["L", "L'", "R", "R'"];
+    value = ko.observable(0);
+    time = ko.observable(0);
+    
+}
+
+class Settings {
+    availableSystems = ["CRN", "DNA 2 domain"];
+    currentSystem = ko.observable("CRN");
     sigma: KnockoutObservable<number> = ko.observable(0.2);
     count: KnockoutObservable<number> = ko.observable(50);
     step: KnockoutObservable<number> = ko.observable(200);
+    events = ko.observableArray<PIEvent>([]);
+    
+    AddEvent = () => {
+        this.events.push(new PIEvent());
+    }
+    RemoveEvent = (data, e) => {
+        e.stopPropagation()
+        this.events.remove(data);
+    }
+}
+
+class ViewModel {
     averagePoint = ko.observable(0);
     averageSolution = ko.observable(0);
+    solves: KnockoutObservableArray<Solve> = ko.observableArray([]);
     private t: KnockoutObservableArray<number> = ko.observableArray([]);
     private worker: Worker;
     private averagesPoint: Array<number>;
     private averagesSolution: Array<number>;
+    private speciesMap = new Object();
+    settings = new Settings();
    
-    compute() {
+    compute = () => {
         if (this.worker != undefined)
             this.worker.terminate();
                         
@@ -168,18 +195,15 @@ class ViewModel {
             var data = <Solver.IWorkerResult>ev.data;
             
             var Time = new Float64Array(data.Time);
-            var Solves = new Array<Float64Array>(12);
-            for (var i = 0; i < 12; i++)
+            var Solves = new Array<Float64Array>(106);
+            for (var i = 0; i < 106; i++)
                 Solves[i] = new Float64Array(data.Solves[i]);
              
-            solve1.x.push(Solves[0].map((val, i) => {return val - Solves[1][i]}));
-            solve2.x.push(Solves[2].map((val, i) => {return val - Solves[3][i]}));
-            solve3.x.push(Solves[4].map((val, i) => {return val - Solves[5][i]}));
-            solve4.x.push(Solves[6].map((val, i) => {return val - Solves[7][i]}));
-            /*solve1.x.push(Solves[40].map((val, i) => {return val - Solves[41][i]}));
-            solve2.x.push(Solves[42].map((val, i) => {return val - Solves[64][i]}));
-            solve3.x.push(Solves[57].map((val, i) => {return val - Solves[84][i]}));
-            solve4.x.push(Solves[98].map((val, i) => {return val - Solves[102][i]}));*/
+            var map = this.speciesMap[this.settings.currentSystem()];
+            solve1.x.push(Solves[map["L"]].map((val, i) => {return val - Solves[map["L'"]][i]}));
+            solve2.x.push(Solves[map["R"]].map((val, i) => {return val - Solves[map["R'"]][i]}));
+            solve3.x.push(Solves[map["V"]].map((val, i) => {return val - Solves[map["V'"]][i]}));
+            solve4.x.push(Solves[map["Y"]].map((val, i) => {return val - Solves[map["Y'"]][i]}));
             
             if (solve1.t.length == 0) {
                 solve1.t = solve2.t = solve3.t = solve4.t = Time;
@@ -191,23 +215,62 @@ class ViewModel {
             this.averageSolution(this.averagesSolution.reduce((a, b) => {return a + b;}) / this.averagesSolution.length);
         }        
         
-        var message: Solver.IWorkerMessage = {
-            x0: initVector(),
-            t0: 0,
-            options: { OutputStep: typeof this.step() == 'string' ? parseFloat(<any>this.step()) : this.step()},
-            rightSide: "rightSide.js",
-            sigma: typeof this.sigma() == 'string' ? parseFloat(<any>this.sigma()) : this.sigma(),
-            count: typeof this.count() == 'string' ? parseFloat(<any>this.count()) : this.count()
+        var message: Solver.IWorkerMessage;
+        var events = (this.settings.events().map(val => this.toIEvent(val))).sort((a,b) => {return a.time - b.time})
+        switch (this.settings.currentSystem()) {
+            case "CRN":
+                message = {
+                    x0: initVector(),
+                    t0: 0,
+                    tFinal: 150000,
+                    options: { OutputStep: this.settings.step()},
+                    rightSide: "rightSide.js",
+                    sigma: this.settings.sigma(),
+                    count: this.settings.count(),
+                    events: events
+                }                
+                break;
+            case "DNA 2 domain":
+                message = {
+                    x0: initVector_(),
+                    t0: 0,
+                    tFinal: 150000,
+                    options: { OutputStep: this.settings.step()},
+                    rightSide: "rightSide106.js",
+                    sigma: this.settings.sigma(),
+                    count: this.settings.count(),
+                    events: events
+                }                
+                break;                
         }
+        
         this.worker.postMessage(JSON.stringify(message));
     }
    
     constructor() {
+        this.speciesMap["CRN"] = {"L": 0, "L'": 1, "R": 2, "R'": 3, "V": 4, "V'": 5, "Y": 6, "Y'": 7};
+        this.speciesMap["DNA 2 domain"] = {"L": 40, "L'": 41, "R": 42, "R'": 64, "V": 57, "V'": 85, "Y": 98, "Y'": 102};
         ko.applyBindings(this);
+    }
+    
+    toIEvent(val: PIEvent): Solver.IEvent {
+        return {time: val.time(), value: val.value(), species: this.speciesMap[this.settings.currentSystem()][val.species()]};
     }
 }
 
-$(document).ready(function() {
+
+if ((<any>ko.bindingHandlers).numeric == null)
+    (<any>ko.bindingHandlers).numeric = {
+        init: (element: HTMLInputElement, valueAccessor, allBindings, viewModel, bindingContext) => {
+            element.addEventListener("change", (ev) => {valueAccessor()(parseFloat(element.value))});
+        },
+        update: (element: HTMLInputElement, valueAccessor, allBindings, viewModel, bindingContext) => {
+            element.value = valueAccessor()();
+        }
+    }        
+    
+
+$(document).ready(() => {
     new ViewModel();
     idd.asPlot($("div[data-idd-plot='chart']")); 
 });
