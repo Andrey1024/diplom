@@ -147,7 +147,7 @@ class PIEvent {
 class Settings {
     availableSystems = ["CRN", "DNA 2 domain"];
     currentSystem = ko.observable("CRN");
-    sigma: KnockoutObservable<number> = ko.observable(0.2);
+    sigma: KnockoutObservable<number> = ko.observable(0.1);
     count: KnockoutObservable<number> = ko.observable(50);
     step: KnockoutObservable<number> = ko.observable(200);
     events = ko.observableArray<PIEvent>([]);
@@ -158,6 +158,18 @@ class Settings {
     RemoveEvent = (data, e) => {
         e.stopPropagation()
         this.events.remove(data);
+    }
+    
+    constructor() {
+        var eventR$ = new PIEvent();
+        eventR$.species("R'");
+        eventR$.time(50000);
+        eventR$.value(8);
+        var eventR = new PIEvent();
+        eventR.species("R");
+        eventR.time(100000);
+        eventR.value(8);
+        this.events([eventR$, eventR]);
     }
 }
 
