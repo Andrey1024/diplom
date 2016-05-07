@@ -7,6 +7,7 @@
 /// <amd-dependency path="knockout-jqueryui/accordion" />
 /// <amd-dependency path="knockout-jqueryui/button" />
 /// <amd-dependency path="knockout-jqueryui/selectmenu" />
+/// <amd-dependency path="knockout-jqueryui/progressbar" />
 
 import $ = require("jquery");
 import ko = require("knockout");
@@ -183,6 +184,16 @@ class ViewModel {
     private averagesSolution: Array<number>;
     private speciesMap = new Object();
     settings = new Settings();
+    progress = ko.observable(0);
+    max = ko.pureComputed(() => {return this.settings.count()});
+   
+    progressChange = () => {
+        $(".progress-label").text(this.progress().toString() + " of " + this.settings.count().toString() + " done");
+    }
+    
+    progressComplete = () => {
+        $(".progress-label").text("Completed");
+    }
    
     compute = () => {
         if (this.worker != undefined)
@@ -190,6 +201,7 @@ class ViewModel {
                         
         this.worker = new Worker("./Build/Workers/bootWorker.js");
         this.solves.removeAll();
+        this.progress(0);
         this.averagePoint(0);
         this.averageSolution(0);
         this.averagesPoint = new Array();
@@ -226,6 +238,8 @@ class ViewModel {
             this.averagesSolution.push(data.TotalTime);
             this.averagePoint(this.averagesPoint.reduce((a, b) => {return a + b;}) / this.averagesPoint.length);
             this.averageSolution(this.averagesSolution.reduce((a, b) => {return a + b;}) / this.averagesSolution.length);
+            
+            this.progress(this.progress() + 1);
         }        
         
         var message: Solver.IWorkerMessage;

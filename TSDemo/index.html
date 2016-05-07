@@ -75,6 +75,9 @@
             </div>
         </div>
         <button style="width: 100%" data-bind="click: $parent.compute, button: {}">Compute</button>
+        <div style="width: 100%" data-bind="progressbar: {value: $parent.progress, max: $parent.max, change: $parent.progressChange, complete: $parent.progressComplete}">
+            <div style="text-align: center" class="progress-label"></div>
+        </div>
     </div>
     <div id="rightPane">
         <div class="idd" id="idd" data-idd-plot="chart" style="height:95%">
