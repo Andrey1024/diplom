@@ -1,4 +1,4 @@
-define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/PrecompiledScripts/idd-ko.js", "knockout-jqueryui/accordion", "knockout-jqueryui/button", "knockout-jqueryui/selectmenu"], function (require, exports, $, ko, idd, tinycolor) {
+define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/PrecompiledScripts/idd-ko.js", "knockout-jqueryui/accordion", "knockout-jqueryui/button", "knockout-jqueryui/selectmenu", "knockout-jqueryui/progressbar"], function (require, exports, $, ko, idd, tinycolor) {
     function initVector_() {
         var p = {};
         p.deg = 0.0008;
@@ -164,11 +164,20 @@ define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/
             this.t = ko.observableArray([]);
             this.speciesMap = new Object();
             this.settings = new Settings();
+            this.progress = ko.observable(0);
+            this.max = ko.pureComputed(function () { return _this.settings.count(); });
+            this.progressChange = function () {
+                $(".progress-label").text(_this.progress().toString() + " of " + _this.settings.count().toString() + " done");
+            };
+            this.progressComplete = function () {
+                $(".progress-label").text("Completed");
+            };
             this.compute = function () {
                 if (_this.worker != undefined)
                     _this.worker.terminate();
                 _this.worker = new Worker("./Build/Workers/bootWorker.js");
                 _this.solves.removeAll();
+                _this.progress(0);
                 _this.averagePoint(0);
                 _this.averageSolution(0);
                 _this.averagesPoint = new Array();
@@ -205,6 +214,7 @@ define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/
                     _this.averagesSolution.push(data.TotalTime);
                     _this.averagePoint(_this.averagesPoint.reduce(function (a, b) { return a + b; }) / _this.averagesPoint.length);
                     _this.averageSolution(_this.averagesSolution.reduce(function (a, b) { return a + b; }) / _this.averagesSolution.length);
+                    _this.progress(_this.progress() + 1);
                 };
                 var message;
                 var events = (_this.settings.events().map(function (val) { return _this.toIEvent(val); })).sort(function (a, b) { return a.time - b.time; });
