@@ -3,7 +3,6 @@
 /// <reference path="PrecompiledScripts/idd.d.ts" />
 /// <reference path="../typings/knockout/knockout.d.ts" />
 /// <reference path="../typings/tinycolor/tinycolor.d.ts" />
-/// <amd-dependency path="Build/PrecompiledScripts/idd-ko.js"/>
 /// <amd-dependency path="knockout-jqueryui/accordion" />
 /// <amd-dependency path="knockout-jqueryui/button" />
 /// <amd-dependency path="knockout-jqueryui/selectmenu" />
