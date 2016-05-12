@@ -289,7 +289,6 @@ class ViewModel {
     }
 }
 
-
 if ((<any>ko.bindingHandlers).numeric == null)
     (<any>ko.bindingHandlers).numeric = {
         init: (element: HTMLInputElement, valueAccessor, allBindings, viewModel, bindingContext) => {

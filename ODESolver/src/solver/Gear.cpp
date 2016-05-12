@@ -81,7 +81,7 @@ SolPoint Gear::Solve() {
         tout += opts.OutputStep;
         Vector lastSolve = last->GetSolve();
         Vector nextSolve = next->GetSolve();
-        return SolPoint(tout, Vector::Lerp(toutLerp, last->GetTime(), lastSolve, next->GetTime(), nextSolve));
+        return SolPoint(toutLerp, Vector::Lerp(toutLerp, last->GetTime(), lastSolve, next->GetTime(), nextSolve));
     } else
         return SolveNext();
 }
