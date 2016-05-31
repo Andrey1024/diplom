@@ -13,7 +13,7 @@ export = (ev: MessageEvent) => {
     initials.forEach((val, count) => {
         var averageTime = 0;
         var points = 0;
-        var totalTime = performance.now();
+        var totalTime = Date.now();
         var time = new Array<number>();
         var solves = new Array<Array<number>>(n);
         var lastSolve = new Array<number>(n);
@@ -33,10 +33,10 @@ export = (ev: MessageEvent) => {
             solves.forEach((v, i) => {
                 v.push(s.solve[i]);
             });
-            var timeForPoint = performance.now();
+            var timeForPoint = Date.now();
             s = gear.Solve();
             points++;
-            averageTime += performance.now() - timeForPoint;
+            averageTime += Date.now() - timeForPoint;
             if (currEvent < events.length && s.time > events[currEvent].time) {                
                 gear.dispose();
                 lastSolve = solves.map(val => val[val.length - 1]);
@@ -64,7 +64,7 @@ export = (ev: MessageEvent) => {
             Time: resultTime.buffer, 
             Solves: resultSolves.map(val => val.buffer),
             AverageTime: averageTime / points,
-            TotalTime: performance.now() - totalTime,
+            TotalTime: Date.now() - totalTime,
             Type: message.type
         }, returnTransfer);
         
