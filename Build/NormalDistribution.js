@@ -20,3 +20,4 @@ define(["require", "exports"], function (require, exports) {
         return [x * t, y * t];
     }
 });
+//# sourceMappingURL=NormalDistribution.js.map

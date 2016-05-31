@@ -1,4 +1,4 @@
-define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/PrecompiledScripts/idd-ko.js", "knockout-jqueryui/accordion", "knockout-jqueryui/button", "knockout-jqueryui/selectmenu", "knockout-jqueryui/progressbar"], function (require, exports, $, ko, idd, tinycolor) {
+define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "knockout-jqueryui/accordion", "knockout-jqueryui/button", "knockout-jqueryui/selectmenu", "knockout-jqueryui/progressbar"], function (require, exports, $, ko, idd, tinycolor) {
     function initVector_() {
         var p = {};
         p.deg = 0.0008;
@@ -273,3 +273,4 @@ define(["require", "exports", "jquery", "knockout", "idd", "tinycolor2", "Build/
         idd.asPlot($("div[data-idd-plot='chart']"));
     });
 });
+//# sourceMappingURL=App.js.map

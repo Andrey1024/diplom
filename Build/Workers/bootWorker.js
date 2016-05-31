@@ -9,3 +9,4 @@ require(["./mainWorker"], function (MainWorker) {
 self.onmessage = function (ev) {
     message = ev;
 };
+//# sourceMappingURL=bootWorker.js.map

@@ -7,7 +7,7 @@ define(["require", "exports", '../Solver', '../NormalDistribution'], function (r
         initials.forEach(function (val, count) {
             var averageTime = 0;
             var points = 0;
-            var totalTime = performance.now();
+            var totalTime = Date.now();
             var time = new Array();
             var solves = new Array(n);
             var lastSolve = new Array(n);
@@ -26,10 +26,10 @@ define(["require", "exports", '../Solver', '../NormalDistribution'], function (r
                 solves.forEach(function (v, i) {
                     v.push(s.solve[i]);
                 });
-                var timeForPoint = performance.now();
+                var timeForPoint = Date.now();
                 s = gear.Solve();
                 points++;
-                averageTime += performance.now() - timeForPoint;
+                averageTime += Date.now() - timeForPoint;
                 if (currEvent < events.length && s.time > events[currEvent].time) {
                     gear.dispose();
                     lastSolve = solves.map(function (val) { return val[val.length - 1]; });
@@ -55,9 +55,10 @@ define(["require", "exports", '../Solver', '../NormalDistribution'], function (r
                 Time: resultTime.buffer,
                 Solves: resultSolves.map(function (val) { return val.buffer; }),
                 AverageTime: averageTime / points,
-                TotalTime: performance.now() - totalTime,
+                TotalTime: Date.now() - totalTime,
                 Type: message.type
             }, returnTransfer);
         });
     };
 });
+//# sourceMappingURL=mainWorker.js.map

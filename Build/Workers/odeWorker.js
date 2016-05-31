@@ -19,3 +19,4 @@ require(['../Solver'], function (Solver) {
         self.onmessage(message);
 });
 self.onmessage = storeMessage;
+//# sourceMappingURL=odeWorker.js.map
